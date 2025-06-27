@@ -94,17 +94,6 @@ POST	/api/messages/	Envoyer un message
 POST	/api/transactions/	Valider un accord
 GET	/api/logs/?annonce=ID	Voir les logs d’un échange
 
-🧪 Tests
-```bash
-# Copier le code
-pytest marketplace/tests/
-Couverture ciblée : models, services, API endpoints
-```
-Tests critiques : validation annonce, transaction, modération
-
-🧠 Prochaines étapes
-Intégration complète de l’IA Agronomist pour suggestion automatique
-
 Feedback & réputation utilisateur
 
 Génération automatique de contrats en PDF
