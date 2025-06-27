@@ -29,8 +29,3 @@ Pillow>=10.0
 bash
 Copier le code
 pip install -r requirements.txt
-🔐 À ajouter aussi :
-
-.env pour stocker SECRET_KEY, DATABASE_URL, SUPABASE_URL, etc.
-
-Un script de lancement local (run.sh ou Makefile) si tu veux aller plus clean encore
