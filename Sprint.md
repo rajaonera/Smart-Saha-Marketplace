@@ -3,12 +3,12 @@
 Mettre en place la base technique backend solide : modèles, auth, premiers endpoints API, et tests basiques.
 
 ## Tâches principales
-1. Organisation du projet
+### 1. Organisation du projet
  Créer les dossiers models, services, tests dans l’app Django marketplace (via PowerShell : mkdir models,services,tests)
 
  Configurer settings.py (ajouter apps, config CORS, JWT, base de données Supabase)
 
-2. Modèles de données essentiels
+### 2. Modèles de données essentiels
  Modèle Producteur (informations de base, contact, localisation)
 
  Modèle Produit (nom, description, prix, quantité, lien producteur)
@@ -19,12 +19,12 @@ Mettre en place la base technique backend solide : modèles, auth, premiers endp
 
  Modèle Evaluation (liens commande, notes, commentaires)
 
-3. Authentification JWT Supabase
+### 3. Authentification JWT Supabase
  Configurer djangorestframework-simplejwt avec settings pour Supabase
 
  Endpoints : inscription, connexion, rafraîchissement token
 
-4. API basiques
+### 4. API basiques
  CRUD Producteur (list, retrieve, create, update, delete)
 
  CRUD Produit (idem)
@@ -33,10 +33,10 @@ Mettre en place la base technique backend solide : modèles, auth, premiers endp
 
  Endpoint Commande : création commande + consultation
 
-5. Services métiers
+### 5. Services métiers
  Implémenter service pour gérer la création de commande (vérification stock, notifications éventuelles)
 
-6. Tests unitaires
+### 6. Tests unitaires
  Tests modèles Producteur, Produit
 
  Tests services (création commande)
@@ -54,6 +54,6 @@ Tests automatisés pour les fonctions critiques
 
 Documentation API minimale (Swagger ou drf-spectacular)
 
-Durée estimée
+## Durée estimée
 2 à 3 semaines (selon disponibilité), avec revues hebdomadaires.
 
