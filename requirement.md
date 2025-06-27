@@ -1,5 +1,4 @@
 # requirements pour Smart Saha Marketplace
-txt
 Copier le code
 ## Core
 Django>=4.2,<5.0
