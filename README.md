@@ -96,7 +96,7 @@ GET	/api/logs/?annonce=ID	Voir les logs d’un échange
 
 🧪 Tests
 ```bash
-Copier le code
+# Copier le code
 pytest marketplace/tests/
 Couverture ciblée : models, services, API endpoints
 ```
