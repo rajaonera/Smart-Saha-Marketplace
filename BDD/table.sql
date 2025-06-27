@@ -17,11 +17,12 @@ CREATE TABLE "user"
 (
     id               SERIAL PRIMARY KEY,
     username         VARCHAR(50)  NOT NULL,
+    id_categorie_user INTEGER      NOT NULL,
     email            VARCHAR(100) NOT NULL UNIQUE,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    justificatif_url VARCHAR(255)
+    justificatif_url VARCHAR(255),
+    foreign key (id_categorie_user) references categorie_user(id)
 );
-
 
 -- Table des mots de passe
 -- Stocke les mots de passe des utilisateurs séparément pour plus de sécurité
