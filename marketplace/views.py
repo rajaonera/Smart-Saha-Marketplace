@@ -37,28 +37,20 @@ class RegisterRequestSerializer(serializers.Serializer):
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer
-    permission_classes = []  # Permet l'accès sans authentification
+    permission_classes = []  # Accès sans authentification
 
     def create(self, request, *args, **kwargs):
         data = request.data.copy()
-        # Hash le mot de passe avant sauvegarde
-        password = data.pop('password', None)
-        if not password:
-            return Response({"password": "Ce champ est requis."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Valide la catégorie utilisateur (par défaut on peut mettre 2 = 'groupe' par exemple)
-        categorie_id = data.get('id_categorie_user_id')
-        if not categorie_id:
+        # Vérifications rapides des champs obligatoires
+        if 'password' not in data or not data['password']:
+            return Response({"password": "Ce champ est requis."}, status=status.HTTP_400_BAD_REQUEST)
+        if 'id_categorie_user_id' not in data or not data['id_categorie_user_id']:
             return Response({"id_categorie_user_id": "Ce champ est requis."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-
-        user = serializer.save()
-        # Crée le password séparé (table Password) avec hash sécurisé
-        from marketplace.models import Password
-        hashed_password = make_password(password)
-        Password.objects.create(user=user, password=hashed_password)
+        user = serializer.save()  # le hash est géré dans le serializer
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
