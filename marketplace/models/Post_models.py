@@ -48,10 +48,13 @@ class Post(models.Model):
     id_categorie_post = models.ForeignKey(CategoriePost, on_delete=models.CASCADE)
     id_currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.ForeignKey(Post_status, on_delete=models.SET_NULL, null=True, blank=True)
-
     labels = models.ManyToManyField(Label, blank=True)
-
+    status = models.ManyToManyField(Post_status, blank=False,through='PostStatusRelation')
 
     def __str__(self):
         return f"Détails pour {self.product.product}"
+
+class PostStatusRelation(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    status = models.ForeignKey(Post_status, on_delete=models.CASCADE)
+    date_changed = models.DateTimeField(auto_now_add=True)

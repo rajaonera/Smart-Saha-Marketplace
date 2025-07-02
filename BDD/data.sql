@@ -108,3 +108,71 @@ INSERT INTO "notification" (id_user, message, notification_type, reference_id)
 VALUES (1, 'Votre publication a été aimée', 'favori', 2);
 INSERT INTO "notification" (id_user, message, notification_type, reference_id)
 VALUES (2, 'Nouveau message reçu', 'message', 1);
+
+
+-- Table des unités agricoles locales
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Kapoka', '2025-07-02 10:00:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Vata', '2025-07-02 10:01:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Farantsa', '2025-07-02 10:02:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Gony (sac)', '2025-07-02 10:03:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Kilogramme', '2025-07-02 10:04:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Tonne', '2025-07-02 10:05:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Litres', '2025-07-02 10:06:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Bouteille (1L)', '2025-07-02 10:07:00');
+
+INSERT INTO unit (unit, created_at)
+VALUES ('Poche (légumes)', '2025-07-02 10:08:00');
+-- Ariary malgache
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Ariary', 'MGA', '2025-07-02 09:00:00');
+
+-- Franc CFA
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Franc CFA', 'XOF', '2025-07-02 09:01:00');
+
+-- Dollar américain
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Dollar américain', 'USD', '2025-07-02 09:02:00');
+
+-- Euro
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Euro', 'EUR', '2025-07-02 09:03:00');
+
+-- Livre sterling
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Livre sterling', 'GBP', '2025-07-02 09:04:00');
+
+-- Yuan chinois
+INSERT INTO marketplace_currency (currency, iso_code, created_at)
+VALUES ('Yuan', 'CNY', '2025-07-02 09:05:00');
+-- Table des unités agricoles locales
+INSERT INTO marketplace_label (name) VALUES
+('Bio'),
+('Sans pesticide'),
+('Agriculture durable'),
+('Certification locale'),
+('Produit frais'),
+('Origine locale'),
+('Sans OGM'),
+('Commerce équitable'),
+('Récolte récente'),
+('Haute qualité'),
+('Label rouge'),
+('Produit de saison'),
+('Respect de l’environnement');

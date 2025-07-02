@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from rest_framework import viewsets
+from rest_framework.permissions import SAFE_METHODS
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from marketplace.models import (
     User, Post, Product, Chat, Message, Review, Favorite, Report, Notification
@@ -63,12 +66,25 @@ class UserViewSet(viewsets.ModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:  # GET, HEAD, OPTIONS
+            return [AllowAny()]  # accès libre pour la lecture
+        return [IsAuthenticated()]  # POST, PUT, PATCH, DELETE besoin d'être connecté
+
+    def perform_create(self, serializer):
+        serializer.save(id_user=self.request.user)
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:  # GET, HEAD, OPTIONS
+            return [AllowAny()]  # accès libre pour la lecture
+        return [IsAuthenticated()]  # POST, PUT, PATCH, DELETE besoin d'être connecté
+
 
 class ChatViewSet(viewsets.ModelViewSet):
     queryset = Chat.objects.all()
