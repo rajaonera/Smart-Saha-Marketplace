@@ -1,0 +1,12 @@
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (1, 1, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (2, 1, 2);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (3, 2, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (4, 2, 2);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (5, 3, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (6, 3, 2);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (7, 4, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (8, 4, 2);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (9, 5, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (10, 5, 2);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (11, 6, 1);
+INSERT INTO public.marketplace_post_labels (id, post_id, label_id) VALUES (12, 6, 2);
