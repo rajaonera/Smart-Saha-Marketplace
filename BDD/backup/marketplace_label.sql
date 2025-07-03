@@ -1,0 +1,13 @@
+INSERT INTO public.marketplace_label (id, name) VALUES (1, 'Bio');
+INSERT INTO public.marketplace_label (id, name) VALUES (2, 'Sans pesticide');
+INSERT INTO public.marketplace_label (id, name) VALUES (3, 'Agriculture durable');
+INSERT INTO public.marketplace_label (id, name) VALUES (4, 'Certification locale');
+INSERT INTO public.marketplace_label (id, name) VALUES (5, 'Produit frais');
+INSERT INTO public.marketplace_label (id, name) VALUES (6, 'Origine locale');
+INSERT INTO public.marketplace_label (id, name) VALUES (7, 'Sans OGM');
+INSERT INTO public.marketplace_label (id, name) VALUES (8, 'Commerce équitable');
+INSERT INTO public.marketplace_label (id, name) VALUES (9, 'Récolte récente');
+INSERT INTO public.marketplace_label (id, name) VALUES (10, 'Haute qualité');
+INSERT INTO public.marketplace_label (id, name) VALUES (11, 'Label rouge');
+INSERT INTO public.marketplace_label (id, name) VALUES (12, 'Produit de saison');
+INSERT INTO public.marketplace_label (id, name) VALUES (13, 'Respect de l’environnement');

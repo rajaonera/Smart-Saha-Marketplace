@@ -7,6 +7,7 @@ from drf_yasg import openapi
 from rest_framework import viewsets
 from rest_framework.permissions import SAFE_METHODS
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import action
 
 from marketplace.models import (
     User, Post, Product, Chat, Message, Review, Favorite, Report, Notification
@@ -22,6 +23,8 @@ from marketplace.serializers import (
     ReportSerializer,
     NotificationSerializer
 )
+from marketplace.services import changer_statut_post
+
 
 class RegisterRequestSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -75,6 +78,18 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(id_user=self.request.user)
 
+    @action(detail=True, methods=["post"], url_path="changer-statut")
+    def changer_statut(self, request, pk=None):
+        statut_id = request.data.get("statut_id")
+
+        if not statut_id:
+            return Response({"error": "statut_id est requis"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            post = changer_statut_post(pk, statut_id)
+            return Response({"message": "Statut changé avec succès", "post_id": post.id})
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()

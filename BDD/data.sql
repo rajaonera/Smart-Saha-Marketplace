@@ -162,6 +162,7 @@ VALUES ('Livre sterling', 'GBP', '2025-07-02 09:04:00');
 INSERT INTO marketplace_currency (currency, iso_code, created_at)
 VALUES ('Yuan', 'CNY', '2025-07-02 09:05:00');
 -- Table des unités agricoles locales
+
 INSERT INTO marketplace_label (name) VALUES
 ('Bio'),
 ('Sans pesticide'),
@@ -176,3 +177,7 @@ INSERT INTO marketplace_label (name) VALUES
 ('Label rouge'),
 ('Produit de saison'),
 ('Respect de l’environnement');
+
+INSERT INTO marketplace_post_status (name) VALUES
+('en négociation'),
+('terminé');
