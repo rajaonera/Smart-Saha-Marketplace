@@ -17,12 +17,6 @@ class Unit(models.Model):
     unit = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
-class Post_status(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
-
 
 class Label(models.Model):
     name = models.CharField(max_length=100)
@@ -34,6 +28,12 @@ class Product(models.Model):
     product = models.CharField(max_length=50)
     id_unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Post_status(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
 
 class Post(models.Model):
     id_type_post = models.ForeignKey(TypePost, on_delete=models.CASCADE)
@@ -54,6 +54,12 @@ class Post(models.Model):
     def __str__(self):
         return f"Détails pour {self.product.product}"
 
+    def changer_statut(self, nouveau_statut: Post_status):
+        if not isinstance(nouveau_statut, Post_status):
+            raise ValueError("Statut invalide")
+
+        PostStatusRelation.objects.create(post=self, status=nouveau_statut)
+        
 class PostStatusRelation(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     status = models.ForeignKey(Post_status, on_delete=models.CASCADE)
