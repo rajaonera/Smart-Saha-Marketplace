@@ -11,6 +11,14 @@ class TypePost(models.Model):
 
     def __str__(self):
         return self.type
+    
+    def validate(self, data):
+        if 'id' in data:
+            raise serializers.ValidationError({"id": "Le champ 'id' ne peut pas être modifié."})
+        if 'created_at' in data:
+            raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
+        return data
+        return self.type
 
     class Meta:
         verbose_name = "Type de post"
@@ -82,43 +90,48 @@ class Product(models.Model):
         verbose_name = "Produit"
         verbose_name_plural = "Produits"
 
-
 class Post_status(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__(args, kwargs)
-        self.id = None
-
     def __str__(self):
-        return self.name
+        return f"{self.name}, {self.description}, {self.is_active}, {self.created_at} "
 
     class Meta:
         verbose_name = "Statut de post"
         verbose_name_plural = "Statuts de posts"
 
+    def save(self, *args, **kwargs):
+        self.name = str(self.name)
+        self.description = str(self.description)
 
-def _is_valid_status_transition(current_status, new_status):
-    """
-    Valide les transitions de statut autorisées
-    """
+
+def get_allowed_transitions():
+    return {
+    "None": ["brouillon", "published"],  # Premier statut
+    "brouillon": ["published", "supprimé"],
+    "published": ["négociation", "vendu", "supprimé"],
+    "négociation": ["vendu", "published", "supprimé"],
+    "vendu": ["supprimé"],
+    "supprimé": [],  # Pas de retour possible
+}
+
+def is_valid_status_transition(current_status, new_status: Post_status):
+    if new_status is None:
+        return False
     # Règles métier pour les transitions
-    valid_transitions = {
-        None: ["brouillon", "published"],  # Premier statut
-        "brouillon": ["published", "supprimé"],
-        "published": ["négociation", "vendu", "supprimé"],
-        "négociation": ["vendu", "published", "supprimé"],
-        "vendu": ["supprimé"],
-        "supprimé": [],  # Pas de retour possible
-    }
+    transitions = get_allowed_transitions()
+    if current_status == "None":
+        current = current_status
+        print("current status: ", current)
+        return new_status.name in transitions.get(current, set())
 
-    current_name = current_status.name.lower() if current_status else None
-    new_name = new_status.name.lower()
-
-    return new_name in valid_transitions.get(current_name, [])
+    else:
+        current = current_status.name if current_status else None
+        print("current status: ", current)
+        return new_status.name in transitions.get(current, set())
 
 
 class Post(models.Model):
@@ -139,17 +152,17 @@ class Post(models.Model):
 
     # Relations many-to-many
     labels = models.ManyToManyField(Label, blank=True, related_name='posts')
-    status = models.ManyToManyField(Post_status, through='PostStatusRelation', related_name='posts')
+    status = models.ManyToManyField(Post_status, through='PostStatusRelation', related_name='posts', default=None)
 
     # Métadonnées
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
-    def __init__(self, *args: Any, **kwargs: Any):
-        super().__init__(args, kwargs)
-        self.id_user = None
-        self.bids = None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id_user = None  # ok si champ custom temporaire
+        # self.bids = None ← ✘ à retirer
 
     def __str__(self):
         return f"{self.title} - {self.product.product}"
@@ -165,27 +178,26 @@ class Post(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    def changer_statut(self, nouveau_statut):
-        """
-        Change le statut du post avec validation
-        """
-        if not isinstance(nouveau_statut, Post_status):
-            raise ValueError("Statut invalide")
+    def changer_statut(self, nouveau_statut, utilisateur=None, commentaire=""):
+        from marketplace.models import PostStatusRelation
 
-        # Vérifier si le statut est actif
-        if not nouveau_statut.is_active:
-            raise ValueError("Ce statut n'est plus disponible")
+        if isinstance(nouveau_statut, int):
+            nouveau_statut = Post_status.objects.get(pk=nouveau_statut)
 
-        # Éviter les doublons
-        current_status = self.get_status_post()
-        if current_status and current_status.id == nouveau_statut.id:
-            return  # Pas de changement nécessaire
+        statut_actuel = self.status_relations.order_by('-date_changed').first().status \
+            if self.status_relations.exists() else "None"
+        #
+        # if not is_valid_status_transition(statut_actuel, nouveau_statut):
+        #     print("is_valid_status_transition: ",  nouveau_statut)
+        #     return False
 
-        # Valider la transition
-        if not _is_valid_status_transition(current_status, nouveau_statut):
-            raise ValueError(f"Transition invalide de {current_status} vers {nouveau_statut}")
-
-        PostStatusRelation.objects.create(post=self, status=nouveau_statut)
+        PostStatusRelation.objects.create(
+            post=self,
+            status=nouveau_statut,
+            changed_by=utilisateur or self.user,
+            comment=commentaire
+        )
+        return True
 
     def get_status_post(self):
         """
@@ -230,6 +242,9 @@ class Post(models.Model):
         if not current_status:
             return False
         return current_status.name.lower() in ["published", "négociation"]
+
+    def get_total_bids(self):
+        return self.bids.count()
 
     class Meta:
         verbose_name = "Post"

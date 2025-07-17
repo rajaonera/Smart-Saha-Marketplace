@@ -1,5 +1,5 @@
 from django.utils import timezone
-from marketplace.models import Bid, Bid_status, BidStatusRelation
+from marketplace.models import Bid, Bid_status, BidStatusRelation, Message
 
 
 def update_bid(bid: Bid, data: dict) -> Bid:
@@ -73,24 +73,49 @@ def accept_bid(bid: Bid, user=None, comment="Enchère acceptée") -> Bid:
     return bid
 
 
-def reject_bid(bid: Bid, user=None, comment="Enchère refusée") -> Bid:
+def reject_bid(bid, owner, continue_negotiation: bool, message: str = ""):
     """
-    Refuse une enchère : modifie son statut à 'refusée'
-    """
-    current_status = bid.get_status_bid()
-    if current_status.name.lower() != "proposée":
-        raise ValueError("Seules les enchères proposées peuvent être refusées.")
+    Permet au propriétaire du post de refuser une enchère.
+    - Si `continue_negotiation` est False → stoppe la négociation.
+    - Si `continue_negotiation` est True → l'enchère reste active.
+    - Un message peut être ajouté au fil de discussion.
 
-    try:
-        rejected_status = Bid_status.objects.get(name__iexact="refusée")
-    except Bid_status.DoesNotExist:
-        raise ValueError("Le statut 'refusée' n'existe pas.")
+    Args:
+        bid (Bid): l'enchère à refuser
+        owner (User): l'utilisateur propriétaire du post
+        continue_negotiation (bool): si True, la négociation continue
+        message (str): message optionnel à envoyer dans le chat
+
+    Raises:
+        ValueError: si l'utilisateur n'est pas propriétaire
+    """
+
+    if bid.post.user != owner:
+        raise ValueError("Vous n'êtes pas autorisé à rejeter cette enchère.")
+
+    # Statuts possibles
+    refused_status = Bid_status.objects.get(name="refusée")
+    stopped_status = Bid_status.objects.get(name="arrêtée")  # à créer si pas encore en DB
+
+    # 1. Ajouter le nouveau statut
+    status_to_apply = refused_status if continue_negotiation else stopped_status
 
     BidStatusRelation.objects.create(
         bid=bid,
-        status=rejected_status,
-        changed_by=user,
-        comment=comment
+        status=status_to_apply,
+        changed_by=owner,
+        comment="Refus manuel via API"
     )
+
+    # 2. Ajouter un message au fil de discussion
+    if message:
+        Message.objects.create(
+            post=bid.post,
+            sender=owner,
+            receiver=bid.user,
+            bid=bid,
+            content=message,
+            timestamp=timezone.now()
+        )
 
     return bid
