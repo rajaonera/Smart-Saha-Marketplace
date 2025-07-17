@@ -160,7 +160,6 @@ class Post(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.id_user = None  # ok si champ custom temporaire
         # self.bids = None ← ✘ à retirer
 
@@ -176,8 +175,8 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args, **kwargs)
-
+        self.save()
+        
     def changer_statut(self, nouveau_statut, utilisateur=None, commentaire=""):
         from marketplace.models import PostStatusRelation
 

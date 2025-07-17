@@ -61,14 +61,6 @@ class PostStatusSerializer(serializers.ModelSerializer):
         if 'name' not in data or not data['name']:
             raise serializers.ValidationError({"name": "Le champ 'name' est requis."})
         return data
-
-
-    # def create(self, validated_data):    
-    #     print("Données validées reçues :", validated_data)  # Debugging
-    #     instance = Post_status.objects.create(**validated_data)
-    #     print("Instance créée :", instance)  # Debugging
-    #     return instance
-    
     
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -112,7 +104,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     # Statut pour la création
     initial_status_id = serializers.PrimaryKeyRelatedField(
-        queryset=Post_status.objects.filter(is_active=True),
+        queryset=Post_status.objects.filter(is_active=True, name= "brouillon"),
         write_only=True,
         required=False
     )
@@ -135,7 +127,7 @@ class PostSerializer(serializers.ModelSerializer):
             # Statut initial
             'initial_status_id'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user', 'initial_status_id']
 
     def create(self, validated_data):
         labels = validated_data.pop('labels', [])

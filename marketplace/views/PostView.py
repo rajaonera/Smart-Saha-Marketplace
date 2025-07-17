@@ -55,6 +55,7 @@ class PostViewSet(viewsets.ModelViewSet):
         category_filter = self.request.query_params.get('category_post')
         min_price = self.request.query_params.get('min_price')
         max_price = self.request.query_params.get('max_price')
+        is_published = self.request.query_params.get('is_published')
 
         if status_filter:
             queryset = queryset.filter(status__name=status_filter)
@@ -64,7 +65,20 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(price__gte=min_price)
         if max_price:
             queryset = queryset.filter(price__lte=max_price)
-
+        if is_published is not None:
+            if is_published is True:                
+                queryset1 = queryset.filter(status__name='published', is_active=True)
+                queryset2 = queryset.filter(status__name='négociation', is_active=True)
+                # Combine les queryset pour les posts publiés
+                queryset  = queryset1 & queryset2
+            else:
+                queryset1 = queryset.filter(is_active=False)
+                queryset2 = queryset.filter(status__name='brouillon')
+                queryset3 = queryset.filter(status__name='supprimé')
+                queryset4 = queryset.filter(status__name='vendu')
+                # Combine les queryset pour les posts non publiés
+                queryset = queryset1 & queryset2 & queryset3 & queryset4
+                
         return queryset.order_by('-created_at')
 
     def perform_create(self, serializer):

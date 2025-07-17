@@ -56,6 +56,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/swagger/', permanent=False)),
     # Auth JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/accounts/login/', TokenObtainPairView.as_view(), name='login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Inscription
