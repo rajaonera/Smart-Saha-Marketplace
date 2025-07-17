@@ -1,8 +1,7 @@
-from typing import Any
-
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 
 class TypePost(models.Model):
@@ -18,7 +17,6 @@ class TypePost(models.Model):
         if 'created_at' in data:
             raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
         return data
-        return self.type
 
     class Meta:
         verbose_name = "Type de post"
@@ -69,6 +67,8 @@ class Label(models.Model):
     color = models.CharField(max_length=7, default="#000000")  # Couleur hex
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __init__(self):
+            
     def __str__(self):
         return self.name
 
@@ -158,11 +158,10 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.id_user = None  # ok si champ custom temporaire
-        # self.bids = None ← ✘ à retirer
+    #
+    # def __init__(self):
+    #     self.id_user = None  # ok si champ custom temporaire
+    #     # self.bids = None ← ✘ à retirer
 
     def __str__(self):
         return f"{self.title} - {self.product.product}"
@@ -176,8 +175,8 @@ class Post(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args, **kwargs)
-
+        self.save()
+        
     def changer_statut(self, nouveau_statut, utilisateur=None, commentaire=""):
         from marketplace.models import PostStatusRelation
 
