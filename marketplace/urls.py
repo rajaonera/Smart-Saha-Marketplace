@@ -15,15 +15,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
+from django.views.generic import RedirectView
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from marketplace.views import RegisterView
+
+from marketplace.views import RegisterView, UnitViewSet, TypePostViewSet, PostStatusViewSet, CategoriePostViewSet
 
 from marketplace.views import (
-    UserViewSet,
     PostViewSet,
     ProductViewSet,
     ChatViewSet,
@@ -32,6 +33,8 @@ from marketplace.views import (
     FavoriteViewSet,
     ReportViewSet,
     NotificationViewSet,
+    CurrencyViewSet,
+    UserViewSet,
 )
 
 router = DefaultRouter()
@@ -44,9 +47,13 @@ router.register(r'reviews', ReviewViewSet, basename='review')
 router.register(r'favorites', FavoriteViewSet, basename='favorite')
 router.register(r'reports', ReportViewSet, basename='report')
 router.register(r'notifications', NotificationViewSet, basename='notification')
-
-
+router.register(r'currencies', CurrencyViewSet, basename='currency')
+router.register(r'units', UnitViewSet, basename='unit')
+router.register(r'typepost' ,TypePostViewSet, basename='typepost')
+router.register(r'categoriepost' ,CategoriePostViewSet, basename='categoriepost')
+router.register(r'poststatus', PostStatusViewSet, basename='poststatus')
 urlpatterns = [
+    path('', RedirectView.as_view(url='/swagger/', permanent=False)),
     # Auth JWT
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

@@ -3,8 +3,6 @@ from marketplace.models import (
     TypePost, CategoriePost, Currency, Unit, Product, Post, Post_status,
     Label,
 )
-from marketplace.serializers import UserSerializer
-from marketplace.serializers.Bid_serialisers import BidSerializer
 
 class TypePostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,6 +20,7 @@ class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
         fields = ['id', 'currency', 'iso_code', 'symbol', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -44,8 +43,8 @@ class ProductSerializer(serializers.ModelSerializer):
 class PostStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post_status
-        fields = ['id', 'name', 'description', 'is_active']
-
+        fields = ['id', 'name', 'description','is_active','created_at']
+        # read_only_fields = ['id','created_at']
 
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,9 +54,11 @@ class LabelSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     # Relations en lecture seule (avec détails)
+    from  marketplace.serializers.User_serializers import UserSerializer
+
+    user = UserSerializer(read_only=True)
     type_post = TypePostSerializer(read_only=True)
     product = ProductSerializer(read_only=True)
-    user = UserSerializer(read_only=True)
     categorie_post = CategoriePostSerializer(read_only=True)
     currency = CurrencySerializer(read_only=True)
     labels = LabelSerializer(many=True, read_only=True)
@@ -126,17 +127,6 @@ class PostSerializer(serializers.ModelSerializer):
         if labels:
             post.labels.set(labels)
 
-        # Assigner le statut initial
-        if initial_status_id:
-            post.changer_statut(initial_status_id)
-        else:
-            # Statut par défaut
-            try:
-                default_status = Post_status.objects.get(name="brouillon")
-                post.changer_statut(default_status)
-            except Post_status.DoesNotExist:
-                pass  # Pas de statut par défaut
-
         return post
 
     def update(self, instance, validated_data):
@@ -153,6 +143,22 @@ class PostSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+    def get_current_status(self, instance):
+        return instance.get_status_post()
+
+    def get_total_bids(self, instance):
+        return instance.get_total_bids()
+
+    def get_highest_bid(self, instance):
+        return instance.get_highest_bid()
+
+    def get_can_receive_bids(self , obj : Post):
+        return obj.can_receive_bids()
+
+    def get_highest_bid_price(self, instance):
+        return instance.get_highest_bid().price
 
 
 def get_status_history(obj):
@@ -172,6 +178,7 @@ def get_status_history(obj):
 class PostDetailSerializer(PostSerializer):
     """Serializer détaillé pour les posts avec informations complètes"""
 
+
     status_history = serializers.SerializerMethodField()
     active_bids = serializers.SerializerMethodField()
     accepted_bid = serializers.SerializerMethodField()
@@ -181,42 +188,43 @@ class PostDetailSerializer(PostSerializer):
 
     def get_active_bids(self, obj):
         """Retourne les enchères actives"""
+        from marketplace.serializers.Bid_serialisers import BidSerializer
         active_bids = obj.get_active_bids()
         return BidSerializer(active_bids, many=True, context=self.context).data
 
     def get_accepted_bid(self, obj):
         """Retourne l'enchère acceptée"""
         accepted_bid = obj.get_accepted_bid()
+        from marketplace.serializers.Bid_serialisers import BidSerializer
         return BidSerializer(accepted_bid, context=self.context).data if accepted_bid else None
 
-#
-# def get_current_status(obj):
-#     status = obj.get_status_post()
-#     return status.name if status else None
-#
-#
-# def get_total_bids(obj):
-#     return obj.bids.count()
+    def get_current_status(self , obj: Post):
+        status = obj.get_status_post()
+        return status.name if status else None
 
-    def validate_image_url(value):
+
+    def get_total_bids(self, obj : Post):
+        return obj.bids.count()
+
+    def validate_image_url(value : str):
         if value and not value.startswith('https://'):
             raise serializers.ValidationError("L'URL doit commencer par ou https://")
         return value
 
-    def validate_quantity(value):
+    def validate_quantity(value : float):
         if value <= 0:
             raise serializers.ValidationError("La quantité doit être positive")
         return value
 
-    def validate_price(value):
+    def validate_price(value : float):
         if value <= 0:
             raise serializers.ValidationError("Le prix doit être positif")
         return value
 
-    def get_can_receive_bids(obj):
+    def get_can_receive_bids(self , obj : Post):
         return obj.can_receive_bids()
 
-    def get_highest_bid(obj):
+    def get_highest_bid(self, obj : Post):
         highest_bid = obj.get_highest_bid()
         if highest_bid:
             return {
@@ -227,17 +235,9 @@ class PostDetailSerializer(PostSerializer):
             }
         return None
 
-    def get_total_bids(obj):
-        return obj.bids.count()
-
-    def get_current_status(obj):
-        status = obj.get_status_post()
-        return PostStatusSerializer(status).data if status else None
-
-
-def get_highest_bid_price(obj):
-    highest_bid = obj.get_highest_bid()
-    return highest_bid.price if highest_bid else None
+    def get_highest_bid_price(self ,obj: Post):
+        highest_bid = obj.get_highest_bid()
+        return highest_bid.price if highest_bid else None
 
 
 class PostSummarySerializer(serializers.ModelSerializer):

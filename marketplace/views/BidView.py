@@ -7,8 +7,8 @@ from rest_framework.filters import OrderingFilter
 from django.shortcuts import get_object_or_404
 
 from marketplace.models import Bid, Post
-from marketplace.serializers import BidSerializer, BidDetailSerializer
-from marketplace.services import cancel_bid,changer_statut,place_bid,update_bid
+from marketplace.serializers import BidSerializer, BidDetailSerializer, RejectBidSerializer
+from marketplace.services import cancel_bid, update_bid, reject_bid
 
 
 class BidViewSet(viewsets.ModelViewSet):
@@ -152,3 +152,34 @@ class BidViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=["post"], url_path="reject", url_name="reject_bid")
+    def reject_bid(self, request):
+        """
+        Le propriétaire du post peut refuser une enchère :
+        - soit continuer la négociation
+        - soit l'arrêter définitivement
+        """
+        bid = self.get_object()
+
+        # Vérification permission
+        if bid.post.user != request.user:
+            return Response(
+                {"error": "Seul le propriétaire de l'annonce peut rejeter cette enchère."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = RejectBidSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            reject_bid(
+                bid=bid,
+                owner=request.user,
+                continue_negotiation=serializer.validated_data['continue_negotiation'],
+                message=serializer.validated_data.get('message', "")
+            )
+            return Response({"message": "Enchère rejetée avec succès."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

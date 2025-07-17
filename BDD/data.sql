@@ -181,3 +181,13 @@ INSERT INTO marketplace_label (name) VALUES
 INSERT INTO marketplace_post_status (name) VALUES
 ('en négociation'),
 ('terminé');
+
+INSERT INTO marketplace_post_status (id, name, description, is_active, created_at) VALUES
+(1, 'brouillon', 'Statut initial du post, non publié', TRUE, NOW()),
+(2, 'publié', 'Post visible par tous', TRUE, NOW()),
+(3, 'proposée', 'Offre en cours', TRUE, NOW()),
+(4, 'acceptée', 'Offre acceptée', TRUE, NOW());
+
+
+INSERT INTO marketplace_post_status (id, name, description, is_active, created_at) VALUES
+(5, 'en negotiation', 'Statut en negotiation', TRUE, NOW());
