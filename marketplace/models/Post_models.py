@@ -67,6 +67,8 @@ class Label(models.Model):
     color = models.CharField(max_length=7, default="#000000")  # Couleur hex
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __init__(self):
+            
     def __str__(self):
         return self.name
 
