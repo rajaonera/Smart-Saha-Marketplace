@@ -15,6 +15,7 @@ from marketplace.serializers import (
 )
 from marketplace.models import IsOwnerOrReadOnly
 from marketplace.serializers.Post_serializers import CurrencySerializer, CategoriePostSerializer, PostStatusSerializer
+from rest_framework.decorators import api_view  # Import api_view
 
 logger = logging.getLogger(__name__)  # Ajout d’un logger
 
@@ -190,6 +191,28 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = BidSerializer(bids, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def invalidate_posts(self, request):
+        """
+        Récupère toutes les annonces en brouillon
+        """
+        posts = Post.objects.filter()
+        post = self.get_object()
+        bids = post.bids.select_related('user').prefetch_related('status_relations__status')
+
+        status_filter = request.query_params.get('bid_status')
+        if status_filter:
+            bids = bids.filter(status_relations__status__name=status_filter)
+
+        serializer = BidSerializer(bids, many=True)
+        return Response(serializer.data)
+
+
+    @action (detail=True, methods=['post'])
+    def validation_post(self, request):
+        post = self.get_object()
+
+
 class CurrencyViewSet(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
@@ -201,20 +224,22 @@ class CategoriePostViewSet(viewsets.ModelViewSet):
 class PostStatusViewSet(viewsets.ModelViewSet):
     queryset = Post_status.objects.all()
     serializer_class = PostStatusSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        print("Playload recu : "  ,request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-            PostStatusSerializer.validate_name(serializer.data['name'])
-
-        except ValidationError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+    
+    # def create(self, request):
+    #     serializer = self.get_serializer(data=request.data)
+    #     print("Payload reçu :", request.data)  # Debugging pour vérifier les données reçues
+    #     try:
+    #         serializer.is_valid(raise_exception=True)
+    #         instance = serializer.create(request.data)  
+    #     except ValidationError as e:
+    #         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    #     response_serializer = self.get_serializer(instance) 
+    #     print("Payload a envoyer :", response_serializer.data)  
+        
+    #     return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        
+    
     def update(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
@@ -224,6 +249,7 @@ class PostStatusViewSet(viewsets.ModelViewSet):
 
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

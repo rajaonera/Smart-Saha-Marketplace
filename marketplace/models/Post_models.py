@@ -11,6 +11,14 @@ class TypePost(models.Model):
 
     def __str__(self):
         return self.type
+    
+    def validate(self, data):
+        if 'id' in data:
+            raise serializers.ValidationError({"id": "Le champ 'id' ne peut pas être modifié."})
+        if 'created_at' in data:
+            raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
+        return data
+        return self.type
 
     class Meta:
         verbose_name = "Type de post"
@@ -82,15 +90,14 @@ class Product(models.Model):
         verbose_name = "Produit"
         verbose_name_plural = "Produits"
 
-
 class Post_status(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
+    description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.name} "
+        return f"{self.name}, {self.description}, {self.is_active}, {self.created_at} "
 
     class Meta:
         verbose_name = "Statut de post"

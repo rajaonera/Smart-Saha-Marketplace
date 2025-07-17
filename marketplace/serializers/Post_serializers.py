@@ -15,7 +15,6 @@ class CategoriePostSerializer(serializers.ModelSerializer):
         model = CategoriePost
         fields = ['id', 'categorie', 'created_at']
 
-
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency
@@ -23,10 +22,12 @@ class CurrencySerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
 
 
+
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = ['id', 'unit', 'abbreviation', 'created_at']
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -44,8 +45,31 @@ class PostStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post_status
         fields = ['id', 'name', 'description','is_active','created_at']
-        # read_only_fields = ['id','created_at']
 
+        extra_kwargs = {
+            'name': {'error_messages': {'unique': "Ce nom de statut existe déjà."}},
+            'description': {'required': False}
+        }    
+
+    
+    def validate_name(self, value):
+        if not value.isalpha():
+            raise serializers.ValidationError("Le champ 'name' doit contenir uniquement des caractères alphabétiques.")
+        return value
+    
+    def validate(self, data):
+        if 'name' not in data or not data['name']:
+            raise serializers.ValidationError({"name": "Le champ 'name' est requis."})
+        return data
+
+
+    # def create(self, validated_data):    
+    #     print("Données validées reçues :", validated_data)  # Debugging
+    #     instance = Post_status.objects.create(**validated_data)
+    #     print("Instance créée :", instance)  # Debugging
+    #     return instance
+    
+    
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
