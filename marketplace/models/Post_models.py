@@ -1,8 +1,7 @@
-from typing import Any
-
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from rest_framework import serializers
 
 
 class TypePost(models.Model):
@@ -18,7 +17,6 @@ class TypePost(models.Model):
         if 'created_at' in data:
             raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
         return data
-        return self.type
 
     class Meta:
         verbose_name = "Type de post"
@@ -158,10 +156,10 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-
-    def __init__(self, *args, **kwargs):
-        self.id_user = None  # ok si champ custom temporaire
-        # self.bids = None ← ✘ à retirer
+    #
+    # def __init__(self):
+    #     self.id_user = None  # ok si champ custom temporaire
+    #     # self.bids = None ← ✘ à retirer
 
     def __str__(self):
         return f"{self.title} - {self.product.product}"
