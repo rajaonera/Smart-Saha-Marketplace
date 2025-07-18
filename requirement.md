@@ -6,7 +6,7 @@ psycopg2-binary>=2.9
 # Auth JWT (Supabase-compatible)
 djangorestframework-simplejwt>=5.3
 
-# CORS headers (frontend ↔ backend)
+# CORS headers (frontend <-> backend)
 django-cors-headers>=4.3
 
 # Documentation API (Swagger/Redoc)
@@ -21,5 +21,5 @@ isort>=5.13
 # Environnement (.env)
 python-dotenv>=1.0
 
-# Optionnel – fichiers/images
+# Optionnel : fichiers/images
 Pillow>=10.0

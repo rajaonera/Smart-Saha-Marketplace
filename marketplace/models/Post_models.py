@@ -91,6 +91,7 @@ class Product(models.Model):
         verbose_name_plural = "Produits"
 
 class Post_status(models.Model):
+    id = models.AutoField(primary_key=True)  # (ceci est implicite si non redéfini)
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
