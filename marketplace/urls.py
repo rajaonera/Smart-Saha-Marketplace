@@ -22,8 +22,6 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
-from marketplace.views import RegisterView, UnitViewSet, TypePostViewSet, PostStatusViewSet, CategoriePostViewSet
-
 from marketplace.views import (
     PostViewSet,
     ProductViewSet,
@@ -34,8 +32,9 @@ from marketplace.views import (
     ReportViewSet,
     NotificationViewSet,
     CurrencyViewSet,
-    UserViewSet,
+    UserViewSet, TypeMessageViewSet, MessageStatusViewSet,
 )
+from marketplace.views import RegisterView, UnitViewSet, TypePostViewSet, PostStatusViewSet, CategoriePostViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
@@ -52,6 +51,9 @@ router.register(r'units', UnitViewSet, basename='unit')
 router.register(r'typepost' ,TypePostViewSet, basename='typepost')
 router.register(r'categoriepost' ,CategoriePostViewSet, basename='categoriepost')
 router.register(r'poststatus', PostStatusViewSet, basename='poststatus')
+router.register(r'typemessage', TypeMessageViewSet, basename='typemessage')
+router.register(r'messagestatus', MessageStatusViewSet, basename='messagestatus')
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/swagger/', permanent=False)),
     # Auth JWT

@@ -1,8 +1,15 @@
-from typing import Any
-
-from django.db import models
-from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.db import models
+from rest_framework import serializers
+
+
+def validate(data):
+    if 'id' in data:
+        raise serializers.ValidationError({"id": "Le champ 'id' ne peut pas être modifié."})
+    if 'created_at' in data:
+        raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
+    return data
 
 
 class TypePost(models.Model):
@@ -10,14 +17,6 @@ class TypePost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.type
-    
-    def validate(self, data):
-        if 'id' in data:
-            raise serializers.ValidationError({"id": "Le champ 'id' ne peut pas être modifié."})
-        if 'created_at' in data:
-            raise serializers.ValidationError({"created_at": "Le champ 'created_at' ne peut pas être modifié."})
-        return data
         return self.type
 
     class Meta:
@@ -49,7 +48,7 @@ class Currency(models.Model):
     class Meta:
         verbose_name = "Devise"
         verbose_name_plural = "Devises"
-
+        
 
 class Unit(models.Model):
     unit = models.CharField(max_length=50, unique=True)
@@ -91,12 +90,17 @@ class Product(models.Model):
         verbose_name_plural = "Produits"
 
 class Post_status(models.Model):
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def init(self):
+        self.name = str(self.name)
+        self.description = str(self.description)
+
+    def str (self):
         return f"{self.name}, {self.description}, {self.is_active}, {self.created_at} "
 
     class Meta:
@@ -183,10 +187,10 @@ class Post(models.Model):
 
         if isinstance(nouveau_statut, int):
             nouveau_statut = Post_status.objects.get(pk=nouveau_statut)
-
-        statut_actuel = self.status_relations.order_by('-date_changed').first().status \
-            if self.status_relations.exists() else "None"
         #
+        # statut_actuel = self.status_relations.order_by('-date_changed').first().status \
+        #     if self.status_relations.exists() else "None"
+        # #
         # if not is_valid_status_transition(statut_actuel, nouveau_statut):
         #     print("is_valid_status_transition: ",  nouveau_statut)
         #     return False

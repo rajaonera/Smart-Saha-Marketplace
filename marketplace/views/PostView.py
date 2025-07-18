@@ -225,19 +225,19 @@ class PostStatusViewSet(viewsets.ModelViewSet):
     queryset = Post_status.objects.all()
     serializer_class = PostStatusSerializer
     
-    # def create(self, request):
-    #     serializer = self.get_serializer(data=request.data)
-    #     print("Payload reçu :", request.data)  # Debugging pour vérifier les données reçues
-    #     try:
-    #         serializer.is_valid(raise_exception=True)
-    #         instance = serializer.create(request.data)  
-    #     except ValidationError as e:
-    #         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        print("Payload reçu :", request.data)  # Debugging pour vérifier les données reçues
+        try:
+            serializer.is_valid(raise_exception=True)
+            instance = serializer.save()
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-    #     response_serializer = self.get_serializer(instance) 
-    #     print("Payload a envoyer :", response_serializer.data)  
+        response_serializer = self.get_serializer(instance) 
+        print("Payload a envoyer :", response_serializer.data)  
         
-    #     return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         
     
     def update(self, request, *args, **kwargs):
