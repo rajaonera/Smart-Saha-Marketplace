@@ -1,21 +1,21 @@
-from django.core.exceptions import ValidationError
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from django.db import transaction
-from django.utils import timezone
 import logging
 
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from django.utils import timezone
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.response import Response
+
+from marketplace.models import IsOwnerOrReadOnly
 from marketplace.models import Post, Bid, Bid_status, BidStatusRelation, Post_status, Currency, CategoriePost, \
     PostStatusRelation
 from marketplace.serializers import (
     PostSerializer, PostDetailSerializer, BidSerializer,
     BidDetailSerializer, PlaceBidSerializer
 )
-from marketplace.models import IsOwnerOrReadOnly
 from marketplace.serializers.Post_serializers import CurrencySerializer, CategoriePostSerializer, PostStatusSerializer
-from rest_framework.decorators import api_view  # Import api_view
 
 logger = logging.getLogger(__name__)  # Ajout d’un logger
 
@@ -36,7 +36,9 @@ class PostViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get_serializer_class(self):
-        """Retourne le serializer approprié selon l'action"""
+        """
+        Retourne le serializer approprié selon l'action
+        """
         if self.action == 'retrieve':
             return PostDetailSerializer
         elif self.action == 'place_bid':
@@ -45,6 +47,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filtre les posts selon les paramètres de requête"""
+
         queryset = Post.objects.select_related(
             'user', 'categorie_post', 'type_post', 'product', 'currency'
         ).prefetch_related(

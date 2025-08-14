@@ -22,6 +22,9 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_serializer_context(self):
+        return {'request': self.request}
+
 class TypeMessageViewSet(viewsets.ModelViewSet):
     queryset = TypeMessage.objects.all()
     serializer_class = TypeMessageSerializer
