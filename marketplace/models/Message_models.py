@@ -23,3 +23,5 @@ class Message(models.Model):
     id_chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     id_type_message = models.ForeignKey(TypeMessage, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
