@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from marketplace.models import Message_status, Chat, TypeMessage, Message, Post, User
+
+from marketplace.models import Message_status, Chat, TypeMessage, Message, Post
 
 
 class MessageStatusSerializer(serializers.ModelSerializer):
@@ -33,7 +34,6 @@ class TypeMessageSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    id_user = serializers.PrimaryKeyRelatedField(read_only=True)  # injecté via JWT
     id_chat = serializers.PrimaryKeyRelatedField(queryset=Chat.objects.all())
     id_type_message = TypeMessageSerializer(read_only=True)
     id_type_message_id = serializers.PrimaryKeyRelatedField(
@@ -45,9 +45,12 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'message',
-            'id_user',
             'id_chat',
             'id_type_message',
             'id_type_message_id',
             'created_at',
         ]
+
+    def create(self, validated_data):
+        validated_data['id_user'] = self.context['request'].user
+        return  super().create(validated_data)

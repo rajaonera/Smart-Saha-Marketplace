@@ -1,5 +1,7 @@
-from marketplace.models import Post, Post_status, Bid, User, PostStatusRelation, Bid_status, BidStatusRelation
 from django.db import transaction
+
+from marketplace.models import Post, Post_status, Bid, User, PostStatusRelation, Bid_status, BidStatusRelation
+
 
 def changer_statut_post(post_id: int, statut_id: int, changed_by: User = None, comment: str = ""):
     try:
@@ -26,7 +28,6 @@ def changer_statut(self, nouveau_statut: Bid_status):
         raise ValueError("Statut d'enchère invalide")
     BidStatusRelation.objects.create(bid=self, status=nouveau_statut)
 
-
 def _is_valid_status_transition(current_status, new_status):
     """
     Valide les transitions de statut autorisées
@@ -46,6 +47,7 @@ def _is_valid_status_transition(current_status, new_status):
     new_name = new_status.name.lower()
 
     return new_name in valid_transitions.get(current_name, [])
+
 def get_all_posts():
     return Post.objects.all()
 

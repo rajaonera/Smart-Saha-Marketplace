@@ -1,5 +1,5 @@
 
-# 📋 Liste des API REST : backend Marketplace
+#  Liste des API REST : backend Marketplace
 
 ### 1. **Inscription utilisateur**
 
@@ -129,10 +129,8 @@
 
 ---
 
-# 📝 Notes supplémentaires
+#  Notes supplémentaires
 
 * Chaque API est **protégée par JWT** sauf l’inscription (`/api/register/`) qui est publique.
-* Tu peux étendre la documentation Swagger/OpenAPI pour chaque endpoint avec `drf-yasg` (tu as déjà commencé).
-* La gestion des images, documents PDF, et tags peut aussi être ajoutée via endpoints similaires (pas encore mentionnés).
 
 ---
