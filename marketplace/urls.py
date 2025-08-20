@@ -52,6 +52,7 @@ router.register(r'units', UnitViewSet, basename='unit')
 router.register(r'typepost' ,TypePostViewSet, basename='typepost')
 router.register(r'categoriepost' ,CategoriePostViewSet, basename='categoriepost')
 router.register(r'poststatus', PostStatusViewSet, basename='poststatus')
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/swagger/', permanent=False)),
     # Auth JWT
