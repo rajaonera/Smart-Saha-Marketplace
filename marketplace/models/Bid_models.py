@@ -1,8 +1,8 @@
 from typing import Any
 
-from django.db import models
-from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.db import models
 
 from marketplace.models import Post, Currency
 
@@ -62,23 +62,6 @@ class Bid(models.Model):
             initial_status = Bid_status.objects.get(name="proposée")
             self.changer_statut(initial_status)
 
-    def changer_statut(self, nouveau_statut, changed_by=None, comment=""):
-        if not isinstance(nouveau_statut, Bid_status):
-            raise ValueError("Statut invalide")
-
-        BidStatusRelation.objects.create(
-            bid=self,
-            status=nouveau_statut,
-            changed_by=changed_by,
-            comment=comment
-        )
-
-    def get_status_bid(self):
-        """
-        Retourne le statut actuel de l'enchère
-        """
-        latest_relation = BidStatusRelation.objects.filter(bid=self).order_by('-date_changed').first()
-        return latest_relation.status if latest_relation else None
 
     class Meta:
         verbose_name = "Enchère"

@@ -2,9 +2,8 @@ from .Bid_serialisers import BidSerializer, BidDetailSerializer, PlaceBidSeriali
 from .Interation_serializers import ReviewSerializer, FavoriteSerializer, ReportSerializer
 from .Message_serializers import ChatSerializer, MessageSerializer, TypeMessageSerializer, MessageStatusSerializer
 from .Notification_serializers import NotificationSerializer
-from .Post_serializers import PostSerializer, PostDetailSerializer, ProductSerializer
+from .Post_serializers import PostSerializer, PostDetailSerializer, ProductSerializer, SemenceSerializer, Category_SemenceSerializers
 from .User_serializers import UserSerializer
-
 __all__ = [
     "PostSerializer",
     "PostDetailSerializer",
@@ -20,6 +19,8 @@ __all__ = [
     "ProductSerializer",
     "PlaceBidSerializer",
     "TypeMessageSerializer",
-    "MessageStatusSerializer"
+    "MessageStatusSerializer",
+    "SemenceSerializer",
+    "Category_SemenceSerializers"
 
 ]

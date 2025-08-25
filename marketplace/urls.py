@@ -35,7 +35,10 @@ from marketplace.views import (
     ReportViewSet,
     NotificationViewSet,
     CurrencyViewSet,
-    UserViewSet, TypeMessageViewSet, MessageStatusViewSet,
+    UserViewSet,
+    TypeMessageViewSet,
+    MessageStatusViewSet,
+    SemenceViewSet
 )
 from marketplace.views import RegisterView, UnitViewSet, TypePostViewSet, PostStatusViewSet, CategoriePostViewSet
 
@@ -56,7 +59,8 @@ router.register(r'categoriepost' ,CategoriePostViewSet, basename='categoriepost'
 router.register(r'poststatus', PostStatusViewSet, basename='poststatus')
 router.register(r'typemessage', TypeMessageViewSet, basename='typemessage')
 router.register(r'messagestatus', MessageStatusViewSet, basename='messagestatus')
-
+router.register(r'semences', SemenceViewSet, basename='semence')
+router.register(r'category_semences', CategoriePostViewSet, basename='category_semence')
 
 schema_view = get_schema_view(
     openapi.Info(

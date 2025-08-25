@@ -113,12 +113,6 @@ class PostViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
-                if bid_amount <= float(post.price):
-                    return Response(
-                        {'error': f'L\'enchère doit être supérieure au prix de base ({post.price})'},
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
                 existing_bid = Bid.objects.filter(
                     post=post,
                     user=user,
@@ -199,7 +193,7 @@ class PostViewSet(viewsets.ModelViewSet):
         """
         Récupère toutes les annonces en brouillon
         """
-        posts = Post.objects.filter()
+        # posts = Post.objects.filter()
         post = self.get_object()
         bids = post.bids.select_related('user').prefetch_related('status_relations__status')
 
@@ -210,10 +204,10 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = BidSerializer(bids, many=True)
         return Response(serializer.data)
 
-
-    @action (detail=True, methods=['post'])
-    def validation_post(self, request):
-        post = self.get_object()
+    #
+    # @action (detail=True, methods=['post'])
+    # def validation_post(self, request):
+    #     post = self.get_object()
 
 
 class CurrencyViewSet(viewsets.ModelViewSet):

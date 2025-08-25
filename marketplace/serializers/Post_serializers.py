@@ -2,15 +2,13 @@ from rest_framework import serializers
 
 from marketplace.models import (
     TypePost, CategoriePost, Currency, Unit, Product, Post, Post_status,
-    Label,
+    Label, Category_Semence, User, Semence,
 )
-
 
 class TypePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypePost
         fields = ['id', 'type', 'created_at']
-
 
 class CategoriePostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,13 +21,10 @@ class CurrencySerializer(serializers.ModelSerializer):
         fields = ['id', 'currency', 'iso_code', 'symbol', 'created_at']
         read_only_fields = ['id', 'created_at']
 
-
-
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
         fields = ['id', 'unit', 'abbreviation', 'created_at']
-
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -42,12 +37,10 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ['id', 'product', 'description', 'unit', 'unit_id', 'created_at']
 
-
 def validate_name(value):
     if not value.isalpha():
         raise serializers.ValidationError("Le champ 'name' doit contenir uniquement des caractères alphabétiques.")
     return value
-
 
 class PostStatusSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,8 +63,7 @@ class PostStatusSerializer(serializers.ModelSerializer):
     #     instance = Post_status.objects.create(**validated_data)
     #     print("Instance créée :", instance)  # Debugging
     #     return instance
-    
-    
+
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
@@ -189,21 +181,6 @@ class PostSerializer(serializers.ModelSerializer):
     def get_highest_bid_price(self, instance):
         return instance.get_highest_bid().price
 
-
-def get_status_history(obj):
-    """Retourne l'historique des statuts"""
-    relations = obj.status_relations.select_related('status', 'changed_by').order_by('-date_changed')
-    return [
-        {
-            'status': relation.status.name,
-            'date_changed': relation.date_changed,
-            'changed_by': relation.changed_by.username if relation.changed_by else None,
-            'comment': relation.comment
-        }
-        for relation in relations
-    ]
-
-
 class PostDetailSerializer(PostSerializer):
     """Serializer détaillé pour les posts avec informations complètes"""
 
@@ -268,7 +245,6 @@ class PostDetailSerializer(PostSerializer):
         highest_bid = obj.get_highest_bid()
         return highest_bid.price if highest_bid else None
 
-
 class PostSummarySerializer(serializers.ModelSerializer):
     """Serializer léger pour les listes de posts"""
 
@@ -283,3 +259,51 @@ class PostSummarySerializer(serializers.ModelSerializer):
             'current_status', 'total_bids', 'highest_bid_price'
         ]
 
+class Category_SemenceSerializers(serializers.ModelSerializer):
+    class meta:
+        model = Category_Semence
+        fields = ['id',
+                  'categorie',
+                  'created_at',
+                  'updated_at']
+
+class SemenceSerializer(serializers.ModelSerializer):
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category_Semence.objects.all(),
+        source = 'category',
+        write_only = True
+    )
+    category = Category_SemenceSerializers(read_only=True)
+
+    unit_id = serializers.PrimaryKeyRelatedField(
+        queryset=Unit.objects.all(),
+        source='unit',
+        write_only=True
+    )
+    unit = UnitSerializer(read_only=True)
+
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+    )
+
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class meta:
+        fields = ['id',
+                  'name',
+                  'quantity',
+                  'status',
+                  'image',
+                  'description',
+                  'price' ,
+                  'unit_id',
+                  'unit',
+                  'user_id',
+                  'user',
+                  'category_id',
+                  'category',
+                  'created_at',
+                  'updated_at'
+                  ]
+        model = Semence
