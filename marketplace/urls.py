@@ -75,6 +75,7 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+
 urlpatterns = [
     path('', RedirectView.as_view(url='/swagger/', permanent=False)),
     # Auth JWT
