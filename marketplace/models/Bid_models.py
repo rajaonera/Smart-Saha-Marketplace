@@ -4,7 +4,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from marketplace.models import Post, Currency
+
+# from marketplace.models import Post, Currency
 
 
 # Modèles pour les enchères
@@ -24,9 +25,9 @@ class Bid_status(models.Model):
 
 class Bid(models.Model):
     user = models.ForeignKey('marketplace.User', on_delete=models.CASCADE, related_name='bids')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='bids')
+    post = models.ForeignKey('marketplace.Post', on_delete=models.CASCADE, related_name='bids')
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0.01)])
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='bids')
+    currency = models.ForeignKey('marketplace.Currency', on_delete=models.CASCADE, related_name='bids')
     message = models.TextField(blank=True)
 
     # Relations

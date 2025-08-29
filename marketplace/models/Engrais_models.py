@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import DateTimeField
+
 
 class Category_Semence(models.Model):
     name = models.CharField(max_length=255)
@@ -19,7 +19,7 @@ class Semence(models.Model):
     quantity = models.FloatField()
     image = models.ImageField(upload_to='semences/')
     created_at = models.DateTimeField(auto_now_add=True, blank=False , null=False)
-    updated_at = models.DateTimeField(auto_now=True , blank=False , null=False, default=DateTimeField.now())
+    updated_at = models.DateTimeField(auto_now=True , blank=False , null=False)
     user = models.ForeignKey('marketplace.User', on_delete=models.CASCADE)
     unit = models.ForeignKey('marketplace.Unit', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
