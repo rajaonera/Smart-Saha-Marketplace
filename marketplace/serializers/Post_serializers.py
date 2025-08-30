@@ -5,6 +5,7 @@ from marketplace.models import (
     Label, Category_Semence, User, Semence,
 )
 
+
 class TypePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypePost
@@ -260,10 +261,10 @@ class PostSummarySerializer(serializers.ModelSerializer):
         ]
 
 class Category_SemenceSerializers(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = Category_Semence
         fields = ['id',
-                  'categorie',
+                  'name',
                   'created_at',
                   'updated_at']
 
@@ -289,7 +290,7 @@ class SemenceSerializer(serializers.ModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
-    class meta:
+    class Meta:
         fields = ['id',
                   'name',
                   'quantity',
